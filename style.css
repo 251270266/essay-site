@@ -1,0 +1,221 @@
+/* ===== 基础重置 ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== 全局 ===== */
+:root {
+  --bg: #fdfaf6;
+  --text: #3a3734;
+  --text-light: #7a7672;
+  --accent: #8b6f5a;
+  --border: #e8e2d9;
+  --max-width: 680px;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "PingFang SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "Songti SC", Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.9;
+  font-size: 1.125rem;
+  padding: 2rem 1.5rem 4rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+/* ===== 导航 ===== */
+nav {
+  margin-bottom: 4rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+nav a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin-right: 2rem;
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: var(--text);
+}
+
+.site-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-right: 2rem;
+  text-decoration: none;
+}
+
+/* ===== 首页 ===== */
+.header {
+  margin-bottom: 3.5rem;
+}
+
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.header p {
+  color: var(--text-light);
+  font-size: 1.05rem;
+  max-width: 540px;
+}
+
+/* 文章列表 */
+.essay-list {
+  list-style: none;
+}
+
+.essay-list li {
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.essay-list li:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.essay-list a {
+  text-decoration: none;
+  color: var(--text);
+  display: block;
+}
+
+.essay-list a:hover .essay-title {
+  color: var(--accent);
+}
+
+.essay-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  transition: color 0.2s;
+}
+
+.essay-date {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 0.4rem;
+}
+
+.essay-excerpt {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+/* ===== 文章页 ===== */
+article {
+  margin-top: 2rem;
+}
+
+article header {
+  margin-bottom: 3rem;
+}
+
+article h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+}
+
+article .date {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+article .body {
+  font-size: 1.15rem;
+  line-height: 2;
+}
+
+article .body p {
+  margin-bottom: 1.6rem;
+  text-align: justify;
+}
+
+article .body p:last-child {
+  margin-bottom: 0;
+}
+
+/* 文章页底部的返回链接 */
+.back-link {
+  display: inline-block;
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+/* ===== 关于页 ===== */
+.about-section {
+  margin-top: 2rem;
+}
+
+.about-section p {
+  margin-bottom: 1.4rem;
+  font-size: 1.1rem;
+}
+
+/* ===== 页脚 ===== */
+footer {
+  margin-top: 5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+footer a {
+  color: var(--text-light);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 600px) {
+  body {
+    font-size: 1rem;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .header h1 {
+    font-size: 1.7rem;
+  }
+
+  article h1 {
+    font-size: 1.6rem;
+  }
+
+  article .body {
+    font-size: 1.05rem;
+  }
+
+  nav a {
+    margin-right: 1.2rem;
+    font-size: 0.9rem;
+  }
+}
