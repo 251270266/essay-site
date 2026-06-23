@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>背景动画预览</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    #bgCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* 预览控制栏 */
+    .toolbar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 12px;
+    }
+
+    .toolbar button {
+      padding: 10px 22px;
+      border-radius: 25px;
+      border: 1px solid rgba(0,0,0,0.15);
+      background: rgba(255,255,255,0.9);
+      font-size: 15px;
+      cursor: pointer;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+    }
+
+    .toolbar button:hover {
+      background: rgba(255,255,255,1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    .toolbar button.active {
+      background: #5d8a3c;
+      color: #fff;
+      border-color: #5d8a3c;
+    }
+
+    .hint {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      color: rgba(0,0,0,0.45);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+<div class="hint">
+  🌿 随笔集 · 背景动画预览<br>
+  <span style="font-size:12px;opacity:0.7">绿坡 · 大树 · 读书的少女 · 风与落叶</span>
+</div>
+
+<div class="toolbar">
+  <button id="btnLight" class="active" onclick="switchTheme('light')">☀️ 亮色模式</button>
+  <button id="btnDark" onclick="switchTheme('dark')">🌙 暗色模式</button>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let W, H;
+  let particles = [];
+  const MAX_PARTICLES = 40;
+  let currentTheme = 'light';
+
+  const themes = {
+    light: {
+      skyTop: '#dce8ed',
+      skyBottom: '#f5f0e8',
+      hill: '#7a9a5c',
+      hillShadow: '#5e7d42',
+      trunk: '#6b4f3c',
+      trunkDark: '#4a3427',
+      leafGreen: ['#5d8a3c','#7aaa4a','#4a7a2c','#6b9a3e','#8ab858','#3d6e28'],
+      girlHair: '#3a2a1a',
+      girlDress: '#d4c8b8',
+      girlSkin: '#e8d5c0',
+      book: '#f5f0e8',
+      windLine: 'rgba(120,160,100,0.10)',
+      leafParticle: ['#6b9a3e','#8ab858','#5d8a3c','#a0c878'],
+    },
+    dark: {
+      skyTop: '#181e28',
+      skyBottom: '#1a1817',
+      hill: '#3a5030',
+      hillShadow: '#2a3a22',
+      trunk: '#3a2a1c',
+      trunkDark: '#2a1e14',
+      leafGreen: ['#3a5a26','#4a6a30','#2e4a1c','#446a2a','#50783a','#264218'],
+      girlHair: '#1a1210',
+      girlDress: '#3a3530',
+      girlSkin: '#4a4038',
+      book: '#3a3530',
+      windLine: 'rgba(100,130,80,0.06)',
+      leafParticle: ['#446a2a','#50783a','#3a5a26','#5a8040'],
+    },
+  };
+
+  let T = themes.light;
+  let treeX, treeY, hillTopY, girlX, girlY;
+
+  function rand(min, max) { return Math.random() * (max - min) + min; }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function createLeaf() {
+    return {
+      x: rand(treeX - 60, treeX + 60),
+      y: rand(treeY - 50, treeY + 30),
+      vx: rand(0.3, 1.5),
+      vy: rand(-0.5, 0.5),
+      size: rand(3, 8),
+      color: pick(T.leafParticle),
+      rotation: rand(0, Math.PI * 2),
+      rotSpeed: rand(-0.04, 0.04),
+      life: rand(180, 550),
+      age: 0,
+      phase: rand(0, Math.PI * 2),
+      amplitude: rand(25, 60),
+    };
+  }
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    treeX = W * 0.55;
+    treeY = H * 0.55;
+    hillTopY = H * 0.45;
+    girlX = treeX - 55;
+    girlY = hillTopY + 15;
+  }
+
+  function drawSky() {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, T.skyTop);
+    grad.addColorStop(1, T.skyBottom);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function drawHill() {
+    ctx.fillStyle = T.hill;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    ctx.quadraticCurveTo(W * 0.4, hillTopY, W * 0.75, hillTopY - 20);
+    ctx.lineTo(W, hillTopY + 30);
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = T.hillShadow;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    ctx.quadraticCurveTo(W * 0.25, hillTopY + 20, W * 0.5, hillTopY);
+    ctx.quadraticCurveTo(W * 0.35, hillTopY + 100, 0, H - 30);
+    ctx.closePath();
+    ctx.fill();
+
+    // 远处小山坡
+    ctx.fillStyle = currentTheme === 'dark'
+      ? 'rgba(60,85,45,0.4)'
+      : 'rgba(140,170,110,0.3)';
+    ctx.beginPath();
+    ctx.moveTo(W * 0.6, H);
+    ctx.quadraticCurveTo(W * 0.8, hillTopY + 30, W, hillTopY + 10);
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawTreeTrunk(time) {
+    const sway = Math.sin(time * 0.0008) * 2;
+    const tx = treeX;
+
+    ctx.fillStyle = T.trunk;
+    ctx.beginPath();
+    ctx.moveTo(tx - 14, treeY + 70);
+    ctx.quadraticCurveTo(tx - 10 + sway, treeY + 20, tx - 6 + sway, treeY - 25);
+    ctx.lineTo(tx + 6 + sway, treeY - 25);
+    ctx.quadraticCurveTo(tx + 10 + sway, treeY + 20, tx + 14, treeY + 70);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = T.trunkDark;
+    ctx.beginPath();
+    ctx.moveTo(tx + 3 + sway, treeY - 25);
+    ctx.lineTo(tx + 6 + sway, treeY - 25);
+    ctx.quadraticCurveTo(tx + 10 + sway, treeY + 20, tx + 14, treeY + 70);
+    ctx.lineTo(tx + 8, treeY + 70);
+    ctx.closePath();
+    ctx.fill();
+
+    // 左侧大枝
+    ctx.fillStyle = T.trunk;
+    ctx.beginPath();
+    ctx.moveTo(tx - 5 + sway, treeY - 5);
+    ctx.quadraticCurveTo(tx - 40, treeY - 35, tx - 60, treeY - 50);
+    ctx.quadraticCurveTo(tx - 35, treeY - 30, tx - 2 + sway, treeY - 10);
+    ctx.closePath();
+    ctx.fill();
+
+    // 右侧大枝
+    ctx.beginPath();
+    ctx.moveTo(tx + 4 + sway, treeY - 8);
+    ctx.quadraticCurveTo(tx + 40, treeY - 32, tx + 55, treeY - 55);
+    ctx.quadraticCurveTo(tx + 30, treeY - 28, tx + 1 + sway, treeY - 12);
+    ctx.closePath();
+    ctx.fill();
+
+    // 小枝丫
+    ctx.strokeStyle = T.trunk;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(tx - 45, treeY - 42);
+    ctx.quadraticCurveTo(tx - 55, treeY - 52, tx - 65, treeY - 55);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(tx + 40, treeY - 45);
+    ctx.quadraticCurveTo(tx + 52, treeY - 58, tx + 62, treeY - 60);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(tx - 20, treeY - 15);
+    ctx.quadraticCurveTo(tx - 30, treeY - 32, tx - 35, treeY - 40);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(tx + 18, treeY - 15);
+    ctx.quadraticCurveTo(tx + 28, treeY - 30, tx + 35, treeY - 42);
+    ctx.stroke();
+
+    return sway;
+  }
+
+  function drawTreeCanopy(time, sway) {
+    const cx = treeX + sway;
+    const cy = treeY - 55;
+
+    const clusters = [
+      { x: cx - 50, y: cy - 5, r: 32 },
+      { x: cx - 20, y: cy - 30, r: 36 },
+      { x: cx + 15, y: cy - 30, r: 36 },
+      { x: cx + 50, y: cy - 5, r: 32 },
+      { x: cx - 35, y: cy + 10, r: 30 },
+      { x: cx + 0, y: cy - 8, r: 34 },
+      { x: cx + 35, y: cy + 10, r: 30 },
+      { x: cx - 8, y: cy - 42, r: 28 },
+      { x: cx + 8, y: cy - 18, r: 32 },
+      { x: cx - 45, y: cy - 28, r: 24 },
+      { x: cx + 45, y: cy - 28, r: 24 },
+      { x: cx - 25, y: cy - 20, r: 30 },
+      { x: cx + 25, y: cy - 20, r: 30 },
+    ];
+
+    clusters.forEach((c) => {
+      ctx.fillStyle = pick(T.leafGreen);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 高光层
+    clusters.slice(0, 6).forEach((c) => {
+      ctx.fillStyle = 'rgba(255,255,255,0.07)';
+      ctx.beginPath();
+      ctx.arc(c.x - 4, c.y - 8, c.r * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function drawGirl(time) {
+    const gx = girlX;
+    const gy = girlY;
+    const sway = Math.sin(time * 0.001) * 1.8;
+
+    ctx.save();
+    ctx.translate(gx, gy);
+
+    // 身体 / 裙子
+    ctx.fillStyle = T.girlDress;
+    ctx.beginPath();
+    ctx.moveTo(-10, 12);
+    ctx.lineTo(-8, -15);
+    ctx.quadraticCurveTo(0, -20, 8, -15);
+    ctx.lineTo(15, 18);
+    ctx.quadraticCurveTo(5, 10, 0, 5);
+    ctx.quadraticCurveTo(-5, 10, -10, 12);
+    ctx.closePath();
+    ctx.fill();
+
+    // 腿
+    ctx.fillStyle = T.girlSkin;
+    ctx.beginPath();
+    ctx.moveTo(-3, 12);
+    ctx.lineTo(-2, 28);
+    ctx.lineTo(2, 28);
+    ctx.lineTo(6, 12);
+    ctx.closePath();
+    ctx.fill();
+
+    // 手臂（捧书）
+    ctx.strokeStyle = T.girlSkin;
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-5, -10);
+    ctx.quadraticCurveTo(-12, -5, -6, 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(5, -10);
+    ctx.quadraticCurveTo(12, -5, 6, 2);
+    ctx.stroke();
+
+    // 书
+    ctx.fillStyle = T.book;
+    ctx.save();
+    ctx.translate(0, -3);
+    ctx.rotate(-0.06);
+    ctx.fillRect(-8, -5, 16, 10);
+    ctx.fillStyle = T.trunk;
+    ctx.strokeStyle = T.trunk;
+    ctx.lineWidth = 0.6;
+    ctx.strokeRect(-8, -5, 16, 10);
+    ctx.beginPath();
+    ctx.moveTo(0, -5);
+    ctx.lineTo(0, 5);
+    ctx.stroke();
+    ctx.restore();
+
+    // 头发 —— 头顶
+    ctx.fillStyle = T.girlHair;
+    ctx.beginPath();
+    ctx.arc(-1, -20, 8, Math.PI, 0);
+    ctx.fill();
+
+    // 左侧发丝
+    ctx.beginPath();
+    ctx.moveTo(-8, -18);
+    ctx.quadraticCurveTo(-16, -12, -12 + sway * 2, -4);
+    ctx.quadraticCurveTo(-10, -8, -6, -16);
+    ctx.closePath();
+    ctx.fill();
+
+    // 右侧发丝
+    ctx.beginPath();
+    ctx.moveTo(6, -18);
+    ctx.quadraticCurveTo(14, -14, 10 + sway * 3, -3);
+    ctx.quadraticCurveTo(8, -8, 4, -16);
+    ctx.closePath();
+    ctx.fill();
+
+    // 被风吹起的长发（多缕）
+    const hairColors = [T.girlHair, T.girlHair, currentTheme === 'light' ? '#4a3828' : '#221816'];
+    hairColors.forEach((hc, i) => {
+      ctx.fillStyle = hc;
+      ctx.beginPath();
+      const offset = i * 3;
+      ctx.moveTo(5 + offset, -16);
+      ctx.quadraticCurveTo(
+        22 + sway * (4 + i) + offset,
+        -22 + sway * (2 + i),
+        28 + sway * (3 + i) + offset,
+        -35 + sway * (1 + i)
+      );
+      ctx.quadraticCurveTo(18 + offset, -25, 7 + offset, -18);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    ctx.restore();
+  }
+
+  function drawWindLines(time) {
+    ctx.strokeStyle = T.windLine;
+    ctx.lineWidth = 1.2;
+    for (let i = 0; i < 4; i++) {
+      const baseY = rand(H * 0.1, H * 0.55);
+      const len = rand(50, 120);
+      const speed = 0.04 + i * 0.01;
+      const x = ((time * speed + i * 250) % (W + 300)) - 150;
+
+      ctx.globalAlpha = 0.5 + Math.sin(time * 0.001 + i) * 0.3;
+      ctx.beginPath();
+      ctx.moveTo(x, baseY);
+      ctx.quadraticCurveTo(
+        x + len * 0.4,
+        baseY + Math.sin(time * 0.002 + i) * 10,
+        x + len * 0.7,
+        baseY + Math.sin(time * 0.002 + i + 0.5) * 8
+      );
+      ctx.quadraticCurveTo(
+        x + len * 0.85,
+        baseY + Math.sin(time * 0.002 + i + 1) * 5,
+        x + len,
+        baseY + Math.sin(time * 0.002 + i + 1.5) * 3
+      );
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function animate(timestamp) {
+    ctx.clearRect(0, 0, W, H);
+
+    drawSky();
+    drawWindLines(timestamp);
+    drawHill();
+    const sway = drawTreeTrunk(timestamp);
+    drawTreeCanopy(timestamp, sway);
+    drawGirl(timestamp);
+
+    // 飘落叶子
+    particles.forEach((p, i) => {
+      p.age++;
+      p.x += p.vx + Math.sin(p.age * 0.03 + p.phase) * 0.35;
+      p.y += p.vy + Math.sin(p.age * 0.02 + p.phase) * 0.25;
+      p.rotation += p.rotSpeed;
+
+      if (p.age > p.life || p.x > W + 40 || p.y > H + 40) {
+        particles[i] = createLeaf();
+        particles[i].age = 0;
+        return;
+      }
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.size, p.size * 0.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    while (particles.length < MAX_PARTICLES) {
+      const p = createLeaf();
+      p.age = rand(0, p.life);
+      particles.push(p);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    for (let i = 0; i < MAX_PARTICLES; i++) {
+      const p = createLeaf();
+      p.age = rand(0, p.life);
+      particles.push(p);
+    }
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+
+  // 导出主题切换
+  window.switchTheme = function (theme) {
+    currentTheme = theme;
+    T = themes[theme];
+    document.getElementById('btnLight').classList.toggle('active', theme === 'light');
+    document.getElementById('btnDark').classList.toggle('active', theme === 'dark');
+  };
+
+  init();
+})();
+</script>
+
+</body>
+</html>
