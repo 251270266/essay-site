@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章标题 — 随笔集</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-essay-date="YYYY-MM-DD">
+
+<nav>
+  <a href="../index.html" class="site-title">随笔集</a>
+  <a href="../index.html">文章</a>
+  <a href="../about.html">关于</a>
+  <span class="nav-spacer"></span>
+  <button class="theme-toggle" id="themeToggle" aria-label="切换暗色模式">☾ 暗色</button>
+</nav>
+
+<article>
+  <header>
+    <h1>文章标题</h1>
+    <div class="article-meta">
+      <span class="date">YYYY年MM月DD日 · 星期X</span>
+      <span class="reading-time" data-chars="0">阅读约 1 分钟</span>
+    </div>
+    <div class="article-tags">
+      <span class="tag">标签1</span>
+      <span class="tag">标签2</span>
+    </div>
+  </header>
+
+  <aside class="toc" id="toc">
+    <div class="toc-title">📑 目录</div>
+  </aside>
+
+  <div class="body">
+    <!-- ===== 正文从这里开始 ===== -->
+
+    <p>写你的内容……</p>
+
+    <!-- 可以用 h2 和 h3 做小标题，会自动生成目录 -->
+    <!-- 例如：<h2 id="section-name">小标题</h2> -->
+
+  </div>
+
+  <nav class="prev-next" id="prevNext"></nav>
+
+  <a href="../index.html" class="back-link">← 返回首页</a>
+</article>
+
+<button class="back-to-top" id="backToTop" title="返回顶部" aria-label="返回顶部">↑</button>
+
+<script src="../script.js"></script>
+</body>
+</html>

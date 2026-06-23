@@ -1,26 +1,53 @@
 /* ===== 随笔集 - 全局脚本 ===== */
 
-// ===== 文章数据（新增文章只需在这里添加一条） =====
+// ================================================================
+// 📝 文章数据 — 添加新文章只需在这里加一条记录
+// ================================================================
+// 字段说明：
+//   title   — 文章标题
+//   date    — 日期 (YYYY-MM-DD)
+//   url     — 文件路径
+//   excerpt — 摘要（用于首页卡片和搜索）
+//   chars   — 总字符数（用于估算阅读时间，中文 ~300字/分钟）
+//   tags    — 标签数组，用于分类筛选
+// ================================================================
+
 const ESSAYS = [
   {
     title: '雨天与《悉达多》',
     date: '2026-06-22',
-    weekday: '星期一',
     url: 'essays/2026-06-22.html',
     excerpt: '大雨一直都在下。一天把《悉达多》看完，久久无法平静。当看到只剩下最后两章时，突然踩住了刹车……',
+    chars: 580,
     tags: ['读书', '感悟', '黑塞'],
   },
   {
     title: '阅读与写作的随想',
     date: '2026-06-17',
-    weekday: '星期三',
     url: 'essays/2026-06-17.html',
     excerpt: '真真切切感受到了在阅读写作上的些许成长。虽然距离出口成章还相差甚远，但能切身感受到自己不那么惧怕写作了……',
+    chars: 2460,
     tags: ['阅读', '写作', '读书', '感悟'],
   },
 ];
 
-// ===== 所有标签（按出现频率排序） =====
+// ===== 工具函数 =====
+
+function getWeekday(dateStr) {
+  const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  const d = new Date(dateStr + 'T00:00:00');
+  return weekdays[d.getDay()];
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+}
+
+function calcReadingTime(chars) {
+  return Math.max(1, Math.round(chars / 300));
+}
+
 function getAllTags() {
   const count = {};
   ESSAYS.forEach(e => {
@@ -33,11 +60,40 @@ function getAllTags() {
     .map(([tag]) => tag);
 }
 
-// ===== 阅读时间计算（中文 ~300 字/分钟） =====
-function calcReadingTime(text) {
-  const chars = text.replace(/\s/g, '').length;
-  const minutes = Math.max(1, Math.round(chars / 300));
-  return minutes;
+// 按日期降序排列（最新的在前）
+function getSortedEssays() {
+  return [...ESSAYS].sort((a, b) => b.date.localeCompare(a.date));
+}
+
+// ===== 渲染首页文章列表 =====
+function renderEssayList() {
+  const list = document.getElementById('essayList');
+  if (!list) return;
+
+  const sorted = getSortedEssays();
+
+  sorted.forEach(essay => {
+    const readingMin = calcReadingTime(essay.chars);
+
+    const li = document.createElement('li');
+    li.setAttribute('data-search', essay.title + ' ' + essay.excerpt);
+    li.setAttribute('data-tags', essay.tags.join(','));
+
+    li.innerHTML =
+      '<a href="' + essay.url + '">' +
+        '<div class="essay-title">' + essay.title + '</div>' +
+        '<div class="essay-meta">' +
+          '<span class="essay-date">' + formatDate(essay.date) + '</span>' +
+          '<span class="reading-time" data-chars="' + essay.chars + '">阅读约 ' + readingMin + ' 分钟</span>' +
+        '</div>' +
+        '<div class="essay-tags">' +
+          essay.tags.map(t => '<span class="tag">' + t + '</span>').join('') +
+        '</div>' +
+        '<div class="essay-excerpt">' + essay.excerpt + '</div>' +
+      '</a>';
+
+    list.appendChild(li);
+  });
 }
 
 // ===== 暗色模式 =====
@@ -45,7 +101,6 @@ function initTheme() {
   const toggle = document.getElementById('themeToggle');
   if (!toggle) return;
 
-  // 默认偏好
   const saved = localStorage.getItem('essay-site-theme');
   if (saved === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
@@ -93,18 +148,6 @@ function initBackToTop() {
   });
 }
 
-// ===== 阅读时间显示（在所有页面上） =====
-function initReadingTime() {
-  const els = document.querySelectorAll('.reading-time[data-chars]');
-  els.forEach(el => {
-    const chars = parseInt(el.getAttribute('data-chars'), 10);
-    if (chars) {
-      const m = Math.max(1, Math.round(chars / 300));
-      el.textContent = '阅读约 ' + m + ' 分钟';
-    }
-  });
-}
-
 // ===== 搜索功能（首页） =====
 function initSearch() {
   const input = document.getElementById('searchInput');
@@ -149,18 +192,16 @@ function initTagFilter() {
     filter.appendChild(btn);
   });
 
-  // 绑定点击事件
+  // 事件委托
   filter.addEventListener('click', (e) => {
     if (!e.target.classList.contains('tag')) return;
 
     const btn = e.target;
     const tag = btn.getAttribute('data-tag');
 
-    // 切换 active 状态
     filter.querySelectorAll('.tag').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 
-    // 筛选列表
     const items = list.querySelectorAll('li');
     items.forEach(item => {
       const tags = (item.getAttribute('data-tags') || '').split(',');
@@ -171,12 +212,11 @@ function initTagFilter() {
       }
     });
 
-    // 隐藏无结果提示
     const noResults = document.getElementById('searchNoResults');
     if (noResults) noResults.style.display = 'none';
   });
 
-  // 初始状态：激活"全部"按钮
+  // "全部" 按钮
   const allBtn = filter.querySelector('.tag-all');
   if (allBtn) {
     allBtn.addEventListener('click', () => {
@@ -206,7 +246,6 @@ function initTOC() {
   list.className = 'toc-list';
 
   headings.forEach((h, i) => {
-    // 如果没有 id，自动生成
     if (!h.id) {
       h.id = 'section-' + (i + 1);
     }
@@ -231,13 +270,10 @@ function initPrevNext() {
   const container = document.getElementById('prevNext');
   if (!container) return;
 
-  // 从 body 上的 data-essay-date 获取当前文章日期
-  const body = document.body;
-  const currentDate = body.getAttribute('data-essay-date');
+  const currentDate = document.body.getAttribute('data-essay-date');
   if (!currentDate) return;
 
-  // 按日期降序排列
-  const sorted = [...ESSAYS].sort((a, b) => b.date.localeCompare(a.date));
+  const sorted = getSortedEssays();
   const idx = sorted.findIndex(e => e.date === currentDate);
   if (idx === -1) return;
 
@@ -250,10 +286,6 @@ function initPrevNext() {
     link.className = 'prev';
     link.innerHTML = '<span class="label">← 上一篇</span>' + prev.title;
     container.appendChild(link);
-  } else {
-    const span = document.createElement('span');
-    span.className = 'prev';
-    container.appendChild(span);
   }
 
   if (next) {
@@ -267,9 +299,9 @@ function initPrevNext() {
 
 // ===== 启动 =====
 document.addEventListener('DOMContentLoaded', () => {
+  renderEssayList();   // ← 首页文章列表由 JS 渲染
   initTheme();
   initBackToTop();
-  initReadingTime();
   initSearch();
   initTagFilter();
   initTOC();
