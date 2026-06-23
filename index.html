@@ -12,6 +12,8 @@
   <a href="index.html" class="site-title">随笔集</a>
   <a href="index.html">文章</a>
   <a href="about.html">关于</a>
+  <span class="nav-spacer"></span>
+  <button class="theme-toggle" id="themeToggle" aria-label="切换暗色模式">☾ 暗色</button>
 </nav>
 
 <div class="header">
@@ -19,26 +21,58 @@
   <p>这里是一些随笔。关于雨天、阅读、写作，以及生活中那些值得被记下的瞬间。</p>
 </div>
 
-<ul class="essay-list">
-  <li>
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="搜索文章标题或摘要…" aria-label="搜索文章">
+</div>
+
+<div class="tag-filter" id="tagFilter">
+  <button class="tag tag-all active" data-tag="">全部</button>
+</div>
+
+<ul class="essay-list" id="essayList">
+  <li data-search="雨天与《悉达多》 大雨一直都在下。一天把《悉达多》看完，久久无法平静。当看到只剩下最后两章时，突然踩住了刹车……" data-tags="读书,感悟,黑塞">
     <a href="essays/2026-06-22.html">
       <div class="essay-title">雨天与《悉达多》</div>
-      <div class="essay-date">2026年6月22日</div>
+      <div class="essay-meta">
+        <span class="essay-date">2026年6月22日</span>
+        <span class="reading-time" data-chars="580">阅读约 2 分钟</span>
+      </div>
+      <div class="essay-tags">
+        <span class="tag">读书</span>
+        <span class="tag">感悟</span>
+        <span class="tag">黑塞</span>
+      </div>
       <div class="essay-excerpt">大雨一直都在下。一天把《悉达多》看完，久久无法平静。当看到只剩下最后两章时，突然踩住了刹车……</div>
     </a>
   </li>
-  <li>
+  <li data-search="阅读与写作的随想 真真切切感受到了在阅读写作上的些许成长。虽然距离出口成章还相差甚远，但能切身感受到自己不那么惧怕写作了……" data-tags="阅读,写作,读书,感悟">
     <a href="essays/2026-06-17.html">
       <div class="essay-title">阅读与写作的随想</div>
-      <div class="essay-date">2026年6月17日</div>
+      <div class="essay-meta">
+        <span class="essay-date">2026年6月17日</span>
+        <span class="reading-time" data-chars="2460">阅读约 8 分钟</span>
+      </div>
+      <div class="essay-tags">
+        <span class="tag">阅读</span>
+        <span class="tag">写作</span>
+        <span class="tag">读书</span>
+        <span class="tag">感悟</span>
+      </div>
       <div class="essay-excerpt">真真切切感受到了在阅读写作上的些许成长。虽然距离出口成章还相差甚远，但能切身感受到自己不那么惧怕写作了……</div>
     </a>
   </li>
 </ul>
 
+<div class="search-no-results" id="searchNoResults">
+  <p>没有找到匹配的文章 🤔</p>
+</div>
+
 <footer>
-  <p>&copy; 2026 <a href="about.html">关于我</a></p>
+  <p>&copy; 2026 <a href="about.html">关于我</a><a href="rss.xml" class="rss-link">RSS 订阅</a></p>
 </footer>
 
+<button class="back-to-top" id="backToTop" title="返回顶部" aria-label="返回顶部">↑</button>
+
+<script src="script.js"></script>
 </body>
 </html>

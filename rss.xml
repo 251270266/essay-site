@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>随笔集</title>
+    <link>https://251270266.github.io/essay-site/</link>
+    <description>静下来，写下来。关于雨天、阅读、写作，以及生活中那些值得被记下的瞬间。</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 23 Jun 2026 08:00:00 +0800</lastBuildDate>
+    <atom:link href="https://251270266.github.io/essay-site/rss.xml" rel="self" type="application/rss+xml"/>
+
+    <item>
+      <title>雨天与《悉达多》</title>
+      <link>https://251270266.github.io/essay-site/essays/2026-06-22.html</link>
+      <guid isPermaLink="true">https://251270266.github.io/essay-site/essays/2026-06-22.html</guid>
+      <pubDate>Mon, 22 Jun 2026 08:00:00 +0800</pubDate>
+      <description><![CDATA[
+        <p>大雨，一直都在下。夜里就被雨声吵得辗转反侧，无法入眠，思绪也随之翻涌。</p>
+        <p>一天把《悉达多》看完，久久无法平静。中午和朋友们一起吃了饭，朋友的孩子们许久未见，感觉瞬间长大了。褪去了稚气和灵动，取而代之的是安静和些许疲惫，我想这是周边学生的普通气质。</p>
+        <p>当看到只剩下最后两章时，突然踩住了刹车，把书合起来。这是一本意难平的佳作，让你不得不安静，不得不思考价值。人生也好，价值也罢，让我重新审视周遭的一切。风、雨、树、石、鸟、窗、河，这些每时每刻存在的现实。</p>
+        <p>这会风在肆意地吹着，吹着他所能触碰到的一切，雨线被拖拽，树枝被拉扯，积水被摇晃。</p>
+        <p>我喜欢雨天。我就这么坐在窗前，静静地看着，看他动，看他飘，看他飞，看他持续的强大的力量，不顾一切地洗涤所能经历的万物。</p>
+        <p>悉达多也曾经历这样的时刻吧，任凭风吹雨打，感受世间万物，但我做不到他沙门似的修行，只敢安静坐在室内，任贫瘠的思绪就在眼前迂回。</p>
+        <p>我很享受这种静，只有雨声风声。风可以透过窗户不小心拂过脸庞，夹带着潮湿和善意。</p>
+      ]]></description>
+      <category>读书</category>
+      <category>感悟</category>
+      <category>黑塞</category>
+    </item>
+
+    <item>
+      <title>阅读与写作的随想</title>
+      <link>https://251270266.github.io/essay-site/essays/2026-06-17.html</link>
+      <guid isPermaLink="true">https://251270266.github.io/essay-site/essays/2026-06-17.html</guid>
+      <pubDate>Wed, 17 Jun 2026 08:00:00 +0800</pubDate>
+      <description><![CDATA[
+        <p>今天比较特别，并不是我强加给了这一天某种特殊意义，而是真的有点不一样。并不是因为要放暑假了，也不是遇到了什么特殊的事情，而是真真切切地感受到了我在阅读写作上的些许成长，这是真实感受到的。</p>
+        <p>虽然我距离出口成章、下笔千言还相差甚远，但能切身感受到自己不那么惧怕写作。当拿起笔或是敲击键盘总能娓娓道来，随随便就可以写个几百一千多字，读起来还挺流畅通顺。虽然做不到言之有物，但最起码做到了言之有理。我想这是一种难得的进步，有些事情只有不惧怕、不逃避，才能去面对，才能把它做好。</p>
+        <p>最近看了纳瓦尔、欧亨利、史铁生，也在看《世界通史》……</p>
+        <p>看纳瓦尔让人明白很多，不过细想这些道理其实都是自己知道的，只是真正实施起来不太容易，这就是人性使然。不过看了他的书可以更加清晰和坚定那些实实在在的真理，并去付诸行动，也有助于让内心平静，更加强化了意志力。</p>
+        <p>欧亨利的短篇小说是文学殿堂里的璀璨明珠。我在品鉴他的短篇时有点吃力，他对语言的把控和对他所表达的内容有种居高临下的控制力……</p>
+        <p>史铁生是我灵魂的清道夫。他的文字可以洗涤我思想上的螨虫，驱赶我灵魂的污垢，并且会突然点醒并推着我前进。</p>
+        <p>至于为什么会去看历史，我想也是因为我需要重新构建自己的世界观吧。</p>
+        <p>好了，今天先记录到这里，感觉还不错！</p>
+      ]]></description>
+      <category>阅读</category>
+      <category>写作</category>
+      <category>读书</category>
+      <category>感悟</category>
+    </item>
+  </channel>
+</rss>
